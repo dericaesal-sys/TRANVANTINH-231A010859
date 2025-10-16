@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Services - Đặt Lịch Dễ Dàng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chosen Palette: "Modern Teal & White" -->
+    <!-- Application Structure Plan: The SPA is designed as a classic landing page for a booking service, inspired by the provided reference site. The structure includes: a Hero section with a primary search call-to-action, followed by sections for Service Categories, Featured Promotions, a Value Proposition ("Why Choose Us"), and a final CTA for registration. This top-down flow is chosen to guide new users from discovering the service's purpose to exploring options and finally converting (signing up). The key interaction is a modal for login/registration, directly implementing the core authentication feature from the project plan. -->
+    <!-- Visualization & Content Choices: 
+        - Hero Search Form -> Goal: User engagement & lead capture -> Viz: Prominent search bar with tabs -> Interaction: Clickable tabs to change search context -> Justification: Mimics modern booking sites and guides user searches effectively -> Method: HTML/Tailwind/JS.
+        - Service Categories -> Goal: Showcase service variety -> Viz: Grid of interactive cards -> Interaction: Hover effects -> Justification: A visually appealing and scannable way to present options -> Method: Tailwind CSS.
+        - Featured Venues -> Goal: Highlight partners -> Viz: Image cards with ratings -> Interaction: Hover effects -> Justification: Crucial for user choice, adds visual appeal and credibility -> Method: HTML/Tailwind.
+        - Login/Registration -> Goal: Implement user authentication from the plan -> Viz: Modal window -> Interaction: Tabs to switch between login and register forms -> Justification: A modal provides a seamless user experience without leaving the page -> Method: Vanilla JS & Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .hero-section {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://anhdephd.vn/wp-content/uploads/2022/04/hinh-nen-powerpoint-3d-dep-1.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .modal {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .header-scrolled {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        header {
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .search-tab.active {
+            border-color: #0d9488; /* teal-600 */
+            color: #0d9488;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <!-- Header -->
+    <header id="main-header" class="fixed top-0 left-0 right-0 z-40 text-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="#" class="text-2xl font-bold">Booking<span class="font-normal">Hub</span></a>
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#services" class="hover:text-teal-300 transition">Dịch Vụ</a>
+                    <a href="#featured" class="hover:text-teal-300 transition">Địa Điểm</a>
+                    <a href="#why-us" class="hover:text-teal-300 transition">Về Chúng Tôi</a>
+                </nav>
+                <div class="flex items-center space-x-2">
+                    <button id="login-btn" class="px-4 py-2 text-sm font-medium hover:bg-white/10 rounded-md transition">Đăng Nhập</button>
+                    <button id="signup-btn" class="px-4 py-2 text-sm font-medium text-slate-900 bg-white hover:bg-slate-200 rounded-md shadow-sm transition">Đăng Ký</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section text-white pt-32 pb-24 sm:pt-40 sm:pb-32">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 fade-in">Tìm & Đặt Lịch Dễ Dàng</h1>
+                <p class="text-lg sm:text-xl text-slate-200 mb-8 max-w-2xl mx-auto fade-in" style="animation-delay: 0.2s;">Khám phá hàng ngàn dịch vụ chất lượng từ spa, salon, nha khoa và hơn thế nữa.</p>
+                <div class="bg-white rounded-lg shadow-xl p-4 max-w-4xl mx-auto fade-in" style="animation-delay: 0.4s;">
+                    <div class="flex space-x-4 border-b mb-4">
+                        <button class="search-tab active py-2 px-1 text-sm sm:text-base font-semibold border-b-2" data-placeholder="Tìm kiếm spa, salon, massage...">
+                            <i class="fa-solid fa-spa mr-2"></i>Làm Đẹp
+                        </button>
+                        <button class="search-tab text-slate-500 py-2 px-1 text-sm sm:text-base font-semibold border-b-2 border-transparent" data-placeholder="Tìm kiếm nha khoa, răng thẩm mỹ...">
+                            <i class="fa-solid fa-tooth mr-2"></i>Nha Khoa
+                        </button>
+                         <button class="search-tab text-slate-500 py-2 px-1 text-sm sm:text-base font-semibold border-b-2 border-transparent" data-placeholder="Tìm bác sĩ, phòng khám...">
+                             <i class="fa-solid fa-heart-pulse mr-2"></i>Sức khỏe
+                        </button>
+                    </div>
+                    <form class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+                        <div class="relative col-span-1 md:col-span-2">
+                            <i class="fa-solid fa-magnifying-glass absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"></i>
+                            <input id="search-input" type="text" placeholder="Tìm kiếm spa, salon, massage..." class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-md focus:ring-teal-500 focus:border-teal-500 text-slate-900">
+                        </div>
+                        <div class="relative">
+                             <i class="fa-solid fa-location-dot absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" placeholder="Khu vực" class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-md focus:ring-teal-500 focus:border-teal-500 text-slate-900">
+                        </div>
+                        <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-md transition duration-300">Tìm Kiếm</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Popular Services Section -->
+        <section id="services" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-slate-900">Dịch Vụ Nổi Bật</h2>
+                    <p class="mt-4 text-lg text-slate-600">Khám phá các dịch vụ được yêu thích nhất.</p>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    <div class="card-hover group text-center bg-slate-50 p-6 rounded-lg transition duration-300 cursor-pointer">
+                        <div class="text-4xl text-teal-600 mb-4"><i class="fa-solid fa-spa"></i></div>
+                        <h3 class="font-semibold text-slate-800">Spa & Massage</h3>
+                    </div>
+                     <div class="card-hover group text-center bg-slate-50 p-6 rounded-lg transition duration-300 cursor-pointer">
+                        <div class="text-4xl text-teal-600 mb-4"><i class="fa-solid fa-scissors"></i></div>
+                        <h3 class="font-semibold text-slate-800">Salon Tóc</h3>
+                    </div>
+                    <div class="card-hover group text-center bg-slate-50 p-6 rounded-lg transition duration-300 cursor-pointer">
+                        <div class="text-4xl text-teal-600 mb-4"><i class="fa-solid fa-tooth"></i></div>
+                        <h3 class="font-semibold text-slate-800">Nha Khoa</h3>
+                    </div>
+                    <div class="card-hover group text-center bg-slate-50 p-6 rounded-lg transition duration-300 cursor-pointer">
+                        <div class="text-4xl text-teal-600 mb-4"><i class="fa-solid fa-heart-pulse"></i></div>
+                        <h3 class="font-semibold text-slate-800">Khám Sức Khỏe</h3>
+                    </div>
+                     <div class="card-hover group text-center bg-slate-50 p-6 rounded-lg transition duration-300 cursor-pointer">
+                        <div class="text-4xl text-teal-600 mb-4"><i class="fa-solid fa-golf-ball-tee"></i></div>
+                        <h3 class="font-semibold text-slate-800">Sân Golf</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Featured Venues Section -->
+        <section id="featured" class="py-16 sm:py-24 bg-slate-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-slate-900">Địa Điểm Nổi Bật</h2>
+                    <p class="mt-4 text-lg text-slate-600">Những địa điểm uy tín và được đánh giá cao nhất.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden group transition duration-300 card-hover">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4z5UnfiziOCo-Ap6grE9--12FX9MWiPUiLQ&s" onerror="this.onerror=null;this.src='https://placehold.co/400x250/14b8a6/ffffff?text=Spa';" alt="Spa" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg">Sen Spa</h3>
+                            <p class="text-sm text-slate-500 mb-2">123 Đường ABC, Quận 1, TP. HCM</p>
+                            <div class="flex items-center text-yellow-500">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+                                <span class="text-slate-600 text-sm ml-2">(128 đánh giá)</span>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white rounded-lg shadow-md overflow-hidden group transition duration-300 card-hover">
+                        <img src="https://cdn.tgdd.vn/2020/04/GameApp/30shine-200x200.jpg" onerror="this.onerror=null;this.src='https://placehold.co/400x250/0ea5e9/ffffff?text=Salon';" alt="Salon" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg">30Shine Salon</h3>
+                            <p class="text-sm text-slate-500 mb-2">456 Đường XYZ, Quận 3, TP. HCM</p>
+                            <div class="flex items-center text-yellow-500">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                <span class="text-slate-600 text-sm ml-2">(250 đánh giá)</span>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white rounded-lg shadow-md overflow-hidden group transition duration-300 card-hover">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRaZaPUBgJs0oU5tZsezTnTURl--gzohR47g&s" onerror="this.onerror=null;this.src='https://placehold.co/400x250/22c55e/ffffff?text=Nha+Khoa';" alt="Nha Khoa" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg">Nha Khoa Kim</h3>
+                            <p class="text-sm text-slate-500 mb-2">789 Đường LMN, Quận 10, TP. HCM</p>
+                             <div class="flex items-center text-yellow-500">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+                                <span class="text-slate-600 text-sm ml-2">(98 đánh giá)</span>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white rounded-lg shadow-md overflow-hidden group transition duration-300 card-hover">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXp3DH-51qBr595jnsolCaWDNpAeG2rjbJKA&s" onerror="this.onerror=null;this.src='https://placehold.co/400x250/8b5cf6/ffffff?text=Phòng+Khám';" alt="Phòng Khám" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg">Phòng Khám CarePlus</h3>
+                            <p class="text-sm text-slate-500 mb-2">012 Đường UVW, Quận 7, TP. HCM</p>
+                             <div class="flex items-center text-yellow-500">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                <span class="text-slate-600 text-sm ml-2">(155 đánh giá)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-slate-900">Hoạt Động Như Thế Nào?</h2>
+                    <p class="mt-4 text-lg text-slate-600">Đặt lịch chỉ trong 3 bước đơn giản.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center relative">
+                    <div class="absolute top-1/2 left-0 w-full h-px bg-slate-200 hidden md:block"></div>
+                    <div class="relative p-6">
+                        <div class="w-16 h-16 mx-auto bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-2xl mb-4 border-4 border-white shadow-sm"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        <h3 class="text-xl font-semibold mb-2">1. Tìm Kiếm</h3>
+                        <p class="text-slate-600">Nhập dịch vụ bạn cần và khám phá các lựa chọn hàng đầu gần bạn.</p>
+                    </div>
+                    <div class="relative p-6">
+                        <div class="w-16 h-16 mx-auto bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-2xl mb-4 border-4 border-white shadow-sm"><i class="fa-solid fa-calendar-days"></i></div>
+                        <h3 class="text-xl font-semibold mb-2">2. Đặt Lịch</h3>
+                        <p class="text-slate-600">Chọn khung giờ phù hợp và xác nhận lịch hẹn của bạn tức thì.</p>
+                    </div>
+                    <div class="relative p-6">
+                        <div class="w-16 h-16 mx-auto bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-2xl mb-4 border-4 border-white shadow-sm"><i class="fa-solid fa-thumbs-up"></i></div>
+                        <h3 class="text-xl font-semibold mb-2">3. Tận Hưởng</h3>
+                        <p class="text-slate-600">Đến địa điểm và tận hưởng dịch vụ chất lượng mà không cần chờ đợi.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Us Section -->
+        <section id="why-us" class="py-16 sm:py-24 bg-slate-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-slate-900">Tại Sao Chọn BookingHub?</h2>
+                    <p class="mt-4 text-lg text-slate-600">Trải nghiệm đặt lịch tốt nhất với những tiện ích vượt trội.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div class="p-6">
+                        <div class="text-4xl text-teal-600 mb-4"><i class="fa-solid fa-calendar-check"></i></div>
+                        <h3 class="text-xl font-semibold mb-2">Đặt Lịch Nhanh Chóng</h3>
+                        <p class="text-slate-600">Chỉ với vài cú nhấp chuột, bạn có thể đặt lịch hẹn mong muốn mọi lúc, mọi nơi.</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-4xl text-teal-600 mb-4"><i class="fa-solid fa-tags"></i></div>
+                        <h3 class="text-xl font-semibold mb-2">Ưu Đãi Hấp Dẫn</h3>
+                        <p class="text-slate-600">Luôn cập nhật các chương trình khuyến mãi độc quyền từ các đối tác hàng đầu.</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-4xl text-teal-600 mb-4"><i class="fa-solid fa-shield-halved"></i></div>
+                        <h3 class="text-xl font-semibold mb-2">Đối Tác Tin Cậy</h3>
+                        <p class="text-slate-600">Chúng tôi chỉ hợp tác với những nhà cung cấp dịch vụ uy tín và được đánh giá cao.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Testimonials Section -->
+        <section id="testimonials" class="py-16 sm:py-24 bg-white">
+             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-slate-900">Khách Hàng Nói Gì Về Chúng Tôi</h2>
+                    <p class="mt-4 text-lg text-slate-600">Những chia sẻ thực tế từ người dùng của BookingHub.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-slate-50 p-6 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <img src="https://topanh.com/wp-content/uploads/2025/04/anh-trai-viet-nam-1.jpg" onerror="this.onerror=null;this.src='https://placehold.co/48x48/cbd5e1/475569?text=A';" class="w-12 h-12 rounded-full mr-4 object-cover" alt="User Avatar">
+                            <div>
+                                <p class="font-semibold">Nguyễn An</p>
+                                <div class="text-yellow-500 text-sm"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                            </div>
+                        </div>
+                        <p class="text-slate-600 italic">"Ứng dụng quá tuyệt vời! Tôi đã đặt lịch cắt tóc chỉ trong 1 phút. Giao diện thân thiện và rất nhiều lựa chọn tốt."</p>
+                    </div>
+                     <div class="bg-slate-50 p-6 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <img src="https://huyendoannongson.vn/wp-content/uploads/2025/03/luu-ban-nhap-tu-dong-7462-57.jpg" onerror="this.onerror=null;this.src='https://placehold.co/48x48/cbd5e1/475569?text=B';" class="w-12 h-12 rounded-full mr-4 object-cover" alt="User Avatar">
+                            <div>
+                                <p class="font-semibold">Trần Bình</p>
+                                <div class="text-yellow-500 text-sm"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                            </div>
+                        </div>
+                        <p class="text-slate-600 italic">"Tìm được phòng khám nha khoa gần nhà với giá ưu đãi nhờ BookingHub. Tiết kiệm được cả thời gian và tiền bạc!"</p>
+                    </div>
+                     <div class="bg-slate-50 p-6 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <img src="https://ss-images.saostar.vn/wp700/2023/6/27/pc/1687801785817/saostar-1q7gagukno7buxdz.jpg" onerror="this.onerror=null;this.src='https://placehold.co/48x48/cbd5e1/475569?text=C';" class="w-12 h-12 rounded-full mr-4 object-cover" alt="User Avatar">
+                            <div>
+                                <p class="font-semibold">Lê Cường</p>
+                                <div class="text-yellow-500 text-sm"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div>
+                            </div>
+                        </div>
+                        <p class="text-slate-600 italic">"Rất hài lòng với dịch vụ. Hệ thống nhắc lịch tự động giúp tôi không bao giờ quên lịch hẹn spa của mình."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Download App Section -->
+        <section class="py-16 sm:py-24 bg-slate-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white rounded-lg shadow-lg p-8 md:p-12 flex flex-col md:flex-row items-center gap-8">
+                    <div class="flex-1 text-center md:text-left">
+                        <h2 class="text-3xl font-bold text-slate-900 mb-2">Trải Nghiệm Tốt Hơn Với Ứng Dụng</h2>
+                        <p class="text-slate-600 mb-6">Tải ứng dụng BookingHub để nhận thông báo tức thì, quản lý lịch hẹn và khám phá các ưu đãi độc quyền ngay trên điện thoại của bạn.</p>
+                        <div class="flex justify-center md:justify-start space-x-4">
+                            <a href="#" class="bg-slate-800 text-white py-3 px-5 rounded-lg flex items-center hover:bg-slate-900 transition">
+                                <i class="fab fa-apple text-2xl mr-3"></i>
+                                <div>
+                                    <p class="text-xs">Tải về từ</p>
+                                    <p class="font-semibold">App Store</p>
+                                </div>
+                            </a>
+                             <a href="#" class="bg-slate-800 text-white py-3 px-5 rounded-lg flex items-center hover:bg-slate-900 transition">
+                                <i class="fab fa-google-play text-2xl mr-3"></i>
+                                <div>
+                                    <p class="text-xs">Tải về từ</p>
+                                    <p class="font-semibold">Google Play</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0">
+                         <img src="https://s3.ap-south-1.amazonaws.com/assets.ynos.in/startup-logos/YNOS362012.jpg" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f1f5f9/a3a3a3?text=App';" alt="App Screenshot" class="rounded-lg shadow-md">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section id="promotions" class="bg-teal-600">
+             <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center text-white">
+                <h2 class="text-3xl font-bold mb-4">Trở Thành Thành Viên Ngay!</h2>
+                <p class="text-teal-100 mb-8 max-w-2xl mx-auto">Đăng ký tài khoản để nhận thông báo về các ưu đãi tốt nhất, quản lý lịch hẹn và tích điểm đổi quà.</p>
+                <button id="cta-signup-btn" class="bg-white text-teal-600 font-bold py-3 px-8 rounded-full text-lg hover:bg-teal-50 transition duration-300 shadow-lg">Đăng Ký Miễn Phí</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold text-white mb-4">Booking<span class="text-teal-400">Hub</span></h3>
+                    <p class="text-sm">Nền tảng đặt lịch dịch vụ trực tuyến hàng đầu Việt Nam.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Dịch Vụ</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white">Làm Đẹp & Spa</a></li>
+                        <li><a href="#" class="hover:text-white">Nha Khoa</a></li>
+                        <li><a href="#" class="hover:text-white">Thể Thao</a></li>
+                        <li><a href="#" class="hover:text-white">Sức Khỏe</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Hỗ Trợ</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white">Câu Hỏi Thường Gặp</a></li>
+                        <li><a href="#" class="hover:text-white">Liên Hệ</a></li>
+                        <li><a href="#" class="hover:text-white">Điều Khoản Dịch Vụ</a></li>
+                    </ul>
+                </div>
+                <div>
+                     <h4 class="font-semibold text-white mb-4">Kết Nối</h4>
+                     <div class="flex space-x-4 text-xl">
+                        <a href="#" class="hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="hover:text-white"><i class="fab fa-youtube"></i></a>
+                     </div>
+                </div>
+            </div>
+            <div class="border-t border-slate-700 mt-8 pt-6 text-center text-sm text-slate-400">
+                <p>&copy; 2025 BookingHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal invisible opacity-0 fixed inset-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="modal-content transform -translate-y-10 bg-white rounded-lg shadow-xl w-full max-w-md m-4">
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-2xl text-slate-500 hover:text-slate-800">&times;</button>
+            <div class="border-b">
+                <div class="flex">
+                    <button data-tab="login" class="auth-tab flex-1 py-3 font-semibold text-center text-teal-600 border-b-2 border-teal-600">Đăng Nhập</button>
+                    <button data-tab="register" class="auth-tab flex-1 py-3 font-semibold text-center text-slate-500">Đăng Ký</button>
+                </div>
+            </div>
+            <div id="login-form" class="auth-form p-8">
+                 <h2 class="text-2xl font-bold text-center mb-6">Chào mừng trở lại!</h2>
+                 <form class="space-y-4">
+                     <div>
+                        <label for="login-email" class="block text-sm font-medium text-slate-700">Email</label>
+                        <input type="email" id="login-email" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500">
+                     </div>
+                     <div>
+                        <label for="login-password" class="block text-sm font-medium text-slate-700">Mật khẩu</label>
+                        <input type="password" id="login-password" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500">
+                     </div>
+                     <button type="submit" class="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 font-semibold">Đăng Nhập</button>
+                 </form>
+            </div>
+            <div id="register-form" class="auth-form p-8 hidden">
+                 <h2 class="text-2xl font-bold text-center mb-6">Tạo tài khoản mới</h2>
+                 <form class="space-y-4">
+                     <div>
+                        <label for="register-name" class="block text-sm font-medium text-slate-700">Họ và tên</label>
+                        <input type="text" id="register-name" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500">
+                     </div>
+                     <div>
+                        <label for="register-email" class="block text-sm font-medium text-slate-700">Email</label>
+                        <input type="email" id="register-email" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500">
+                     </div>
+                     <div>
+                        <label for="register-password" class="block text-sm font-medium text-slate-700">Mật khẩu</label>
+                        <input type="password" id="register-password" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500">
+                     </div>
+                     <button type="submit" class="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 font-semibold">Đăng Ký</button>
+                 </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Header scroll effect
+            const header = document.getElementById('main-header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('header-scrolled', 'text-slate-800');
+                    header.classList.remove('text-white');
+                } else {
+                    header.classList.remove('header-scrolled', 'text-slate-800');
+                    header.classList.add('text-white');
+                }
+            });
+
+            // Search tabs
+            const searchTabs = document.querySelectorAll('.search-tab');
+            const searchInput = document.getElementById('search-input');
+            searchTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    searchTabs.forEach(t => t.classList.remove('active', 'text-teal-600'));
+                    tab.classList.add('active', 'text-teal-600');
+                    searchInput.placeholder = tab.dataset.placeholder;
+                });
+            });
+
+            // Modal logic
+            const authModal = document.getElementById('auth-modal');
+            const modalContent = authModal.querySelector('.modal-content');
+            const loginBtn = document.getElementById('login-btn');
+            const signupBtn = document.getElementById('signup-btn');
+            const ctaSignupBtn = document.getElementById('cta-signup-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const authTabs = document.querySelectorAll('.auth-tab');
+            const authForms = document.querySelectorAll('.auth-form');
+
+            function openModal() {
+                authModal.classList.remove('invisible', 'opacity-0');
+                modalContent.classList.remove('-translate-y-10');
+            }
+
+            function closeModal() {
+                authModal.classList.add('opacity-0');
+                modalContent.classList.add('-translate-y-10');
+                setTimeout(() => {
+                    authModal.classList.add('invisible');
+                }, 300);
+            }
+
+            function switchTab(targetTab) {
+                authTabs.forEach(tab => {
+                    if (tab.dataset.tab === targetTab) {
+                        tab.classList.add('text-teal-600', 'border-teal-600');
+                        tab.classList.remove('text-slate-500');
+                    } else {
+                        tab.classList.remove('text-teal-600', 'border-teal-600');
+                        tab.classList.add('text-slate-500');
+                    }
+                });
+
+                authForms.forEach(form => {
+                    if (form.id === `${targetTab}-form`) {
+                        form.classList.remove('hidden');
+                    } else {
+                        form.classList.add('hidden');
+                    }
+                });
+            }
+
+            loginBtn.addEventListener('click', () => {
+                switchTab('login');
+                openModal();
+            });
+            signupBtn.addEventListener('click', () => {
+                switchTab('register');
+                openModal();
+            });
+            ctaSignupBtn.addEventListener('click', () => {
+                switchTab('register');
+                openModal();
+            });
+            closeModalBtn.addEventListener('click', closeModal);
+            authModal.addEventListener('click', (e) => {
+                if (e.target === authModal) closeModal();
+            });
+            authTabs.forEach(tab => {
+                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+            });
+        });
+    </script>
+</body>
+</html>
